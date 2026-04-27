@@ -1,12 +1,8 @@
 # DrunkMan: An Application of the Central Limit Theorem with the Monte Carlo method
 A numerical simulation of the 2D Random Walk using the Monte Carlo method.
 
----
-
 ## **Description**
 This project simulates the statistical properties of a 2D random walk, leveraging the **Central Limit Theorem** to demonstrate convergence to a Gaussian distribution. The simulation is implemented in C++ and accelerated using Apple's Metal API via the [metal-cpp](https://developer.apple.com/metal/cpp/) library, which allows for high-performance GPU computation. [PCG32](https://www.pcg-random.org/), a high-quality pseudo-random number generator, has been used.
-
----
 
 ## **Dir tree**
 ```
@@ -31,8 +27,6 @@ This project simulates the statistical properties of a 2D random walk, leveragin
     └── MetalDrunkMan.*     # Metal-accelerated simulation
 ```
 
----
-
 ## **Dependencies**
 - **C++20**
 - **Metal API** (macOS only)
@@ -42,10 +36,7 @@ This project simulates the statistical properties of a 2D random walk, leveragin
 > **Note**: This project is designed for macOS with a GPU that supports Metal.
 
 # 📄 **License**
-
 This project is open-source and licensed under the [MIT License](LICENSE).
-
----
 
 ```
 **Authors**: Martino Barbieri, Matteo Leonardi 

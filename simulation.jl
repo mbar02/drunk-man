@@ -9,11 +9,12 @@ using Statistics
 using LinearAlgebra
 using Random
 using DelimitedFiles
+using LsqFit
 
 # --- CONFIGURAZIONE ---
 const MAX_SAMPLES = 1e9
 const N_VALUES = [32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384]
-const SCALING_FACTOR = 1.0
+const SCALING_FACTOR = 2.0
 
 """
 Esegue il binario drunkMan
@@ -82,13 +83,13 @@ Calcola la differenza tra cumulativa 2D in O(M log M) e gaussiana usando Sweep-l
 """
 function calculate_delta_cumulative_optimized_FenwickTree(df::DataFrame, N::Int)
     # Estrazione array con tipo forzato per performance
-    raw_x::Vector{Float64} = Float64.(df.x)
-    raw_y::Vector{Float64} = Float64.(df.y)
+    raw_x::Vector{Float32} = Float32.(df.x)
+    raw_y::Vector{Float32} = Float32.(df.y)
 
     len = length(raw_x)
 
     # Riscalamento
-    sqrtN = sqrt(N)
+    sqrtN = Float32(sqrt(N))
     x = raw_x ./ sqrtN
     y = raw_y ./ sqrtN
 
@@ -96,7 +97,7 @@ function calculate_delta_cumulative_optimized_FenwickTree(df::DataFrame, N::Int)
 
     # 1. Compressione delle coordinate Y (necessaria per indicizzare il BIT)
     y_unique = sort(unique(y))
-    y_map = Dict{Float64, Int}(val => i for (i, val) in enumerate(y_unique))
+    y_map = Dict{Float32, Int}(val => i for (i, val) in enumerate(y_unique))
     max_y_rank = length(y_unique)
 
     # 2. Preparazione punti per Sweep-line
@@ -136,7 +137,7 @@ function calculate_delta_cumulative_optimized_FenwickTree(df::DataFrame, N::Int)
             if delta_cum_sup < delta_cum
                 delta_cum_sup = delta_cum
                 # Calcolo della deviazione standard
-                sigma = sqrt( (cum^2 * (1.0 - cum)) / len )
+                sigma = sqrt( (cum * (1.0 - cum)) / len )
             end
 
             next!(p)
@@ -154,7 +155,7 @@ function main()
     mkpath("./data")
     mkpath("./plots")
 
-    results_s = Tuple{Float64, Float64}[]
+    results_s = Tuple{Float32, Float32}[]
     valid_N_s = Int[]
     files_s   = []
 
@@ -181,27 +182,78 @@ function main()
 
     # --- PLOT FINALE ---
     if !isempty(results_s)
-        # Spacchettamento risultati (unzip)
+        x = valid_N_s
         y = [r[1] for r in results_s]
         sy = [r[2] for r in results_s]
 
-        # Setup Plot con backend GR (molto veloce)
+        whgs = 1.0 ./ sy.^2
+
+        # fit
+        @. model(xx,p) = p[1] * xx^p[2] + p[3]
+        p0 = [ mean( x .* y ), -1.0, 0.0 ]
+
+        fit   = curve_fit(model, x, y, whgs, p0)
+        p_fit = coef(fit)
+        err   = stderror(fit)
+        cov_m = vcov(fit)
+
+        chi2  = sum( whgs.*( y .- model(x,p_fit) ).^2 ) / ( length(x) - length(p0) )
+
+        println("\n" * "="^30)
+        println("RISULTATI DEL FIT: y = a * N^b + c")
+        @printf("a: %.6f ± %.6f\n", p_fit[1], err[1])
+        @printf("b: %.6f ± %.6f\n", p_fit[2], err[2])
+        @printf("c: %.6f ± %.6f\n", p_fit[3], err[3])
+        println("-"^30)
+        println("Matrice di Covarianza:")
+        display(cov_m)
+        println("Chi2 ridotto")
+        @printf("chi2: %.6f\n", chi2)
+        println("\n" * "="^30)
+
+        open("./plots/results.txt", "w") do f
+            write(f, "RISULTATI DEL FIT: y = a * N^b + c\n")
+            @printf(f, "Parametri:\n")
+            @printf(f, "a: %.10f +/- %.10f\n",   p_fit[1], err[1])
+            @printf(f, "b: %.10f +/- %.10f\n",   p_fit[2], err[2])
+            @printf(f, "c: %.10f +/- %.10f\n\n", p_fit[3], err[3])
+            write(f, "Matrice di Covarianza:\n")
+            # Scrittura formattata della matrice
+            for row in eachrow(cov_m)
+                write(f, join([@sprintf("%.10e", x) for x in row], "\t") * "\n")
+            end
+            @printf(f, "chi2: %.6f\n", chi2)
+        end
+
+        # Setup Plot con backend GR
         gr()
+
+        x_fit = exp10.(range(log10(minimum(x)*0.8), stop=log10(maximum(x)/0.8), length=100))
+        y_fit = model(x_fit, p_fit)
+
         p = plot(
-            valid_N_s, y,
+            x, y,
             yerror = sy,
             xscale = :log10,
             yscale = :log10,
             seriestype = :scatter,
-            title = "Distanza del sup",
+            title  = "Distanza del sup",
             xlabel = L"N",
-            ylabel = L"D_{\text{sup}}",
-            legend = false,
-            grid = true,
+            ylabel = L"D_{\textrm{sup}}",
+            label  = "Dati simulati",
+            legend = true,
+            grid   = true,
             minorgrid = true,
             markerstrokewidth = 1,
             markersize = 2,
-            dpi = 300
+            dpi    = 300
+        )
+        plot!(
+            p, x_fit, y_fit, 
+            label = "Fit: a*N^b + c", 
+            linestyle = :dash, 
+            linecolor = :red, 
+            linewidth = 2
         )
 
         savefig(p, "./plots/confronto_totale.svg")

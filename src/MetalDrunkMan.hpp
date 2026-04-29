@@ -5,8 +5,8 @@
 #define MSL_THSPTHGSQR 8
 #define MSL_THS        ( MSL_THSPTHG * MSL_THGS )
 
-#define SAMPLES_PER_COMMIT 1
-#define FTIFREQUENCY       1
+#define SAMPLES_PER_COMMIT 2
+#define FTIFREQUENCY       4
 
 #ifndef __METAL_VERSION__
 

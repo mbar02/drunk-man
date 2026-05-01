@@ -3,3 +3,4 @@ plots
 build/*
 !build/Makefile
 .DS_Store
+*.pdf

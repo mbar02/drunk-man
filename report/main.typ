@@ -10,7 +10,7 @@
 
 #show: ifacconf-rules
 #show: ifacconf.with(
-  title: [TODO TITOLO],
+  title: [From random steps to normal distributions:\ simulating the Central Limit Theorem],
   authors: (
     (
       name: "M. Barbieri",
@@ -19,7 +19,7 @@
     ),
     (
       name: "M. Leonardi",
-      email: "TODO INSERIRE MAIL",
+      email: "m.leonardi16@studenti.unipi.it",
       affiliation: 1,
     ),
   ),
@@ -30,7 +30,8 @@
     ),
   ),
   abstract: [
-TODO: abstract
+This pedagogical report illustrates the Central Limit Theorem through the simulation of a two-dimensional random walk: starting from the origin, a point moves in random directions for a large number of steps; as the number of steps increases, the distribution of its final positions approaches a Gaussian curve.
+The report guides the reader through the intuitive idea behind the theorem and its emergence in numerical experiments, while treating technical details of the simulation to dedicated sections.
   ],
 )
 
@@ -39,8 +40,7 @@ TODO: abstract
   $#math.cal(it)$
 }) + h(0pt))
 
-//#let otimes={math.times.circle} sostituito con #let otimes={math.times.o}
-#let otimes={math.times.o}
+#let otimes={math.times.//o}
 #set list(body-indent: 0.3em,indent: 0.1em,spacing: 0.5em)
 #set enum(body-indent: 0.7em,indent: 0.1em,spacing: 0.5em)
 #set math.cases(gap: 1em)
@@ -107,5 +107,10 @@ TODO: abstract
 }
 
 = Introduction
+} sostituito con #let otimes={math.times.o}
+#let otimes={math.times.o- Spiegazione teorema centrale del limite
+- Spiegare il sistema simulato
+
+= Methods of investigation
 
 #bibliography("refs.bib", style: "springer-basic", full: true)

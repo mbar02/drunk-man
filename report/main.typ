@@ -107,8 +107,14 @@ The report guides the reader through the intuitive idea behind the theorem and i
 }
 
 = Introduction
-- Spiegazione teorema centrale del limite
-- Spiegare il sistema simulato
+
+// Spiegazione teorema centrale del limite
+== Central Limit Theorem
+Under certain conditions, the distribution of the sum (or average) of a large number of independent, identically distributed random variables approaches a Gaussian distribution, regardless of the original distribution of the variables.
+
+// Spiegare il sistema simulato
+== The simulated system
+The system we simulate is a two-dimensional random walk, where a point starts at the origin and moves to a random direction at each, equally long, step.
 
 = Methods of investigation
 

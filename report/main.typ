@@ -39,7 +39,8 @@ TODO: abstract
   $#math.cal(it)$
 }) + h(0pt))
 
-#let otimes={math.times.circle}
+//#let otimes={math.times.circle} sostituito con #let otimes={math.times.o}
+#let otimes={math.times.o}
 #set list(body-indent: 0.3em,indent: 0.1em,spacing: 0.5em)
 #set enum(body-indent: 0.7em,indent: 0.1em,spacing: 0.5em)
 #set math.cases(gap: 1em)

@@ -40,7 +40,7 @@ The report guides the reader through the intuitive idea behind the theorem and i
   $#math.cal(it)$
 }) + h(0pt))
 
-#let otimes={math.times.//o}
+#let otimes={math.times.o}
 #set list(body-indent: 0.3em,indent: 0.1em,spacing: 0.5em)
 #set enum(body-indent: 0.7em,indent: 0.1em,spacing: 0.5em)
 #set math.cases(gap: 1em)
@@ -107,8 +107,7 @@ The report guides the reader through the intuitive idea behind the theorem and i
 }
 
 = Introduction
-} sostituito con #let otimes={math.times.o}
-#let otimes={math.times.o- Spiegazione teorema centrale del limite
+- Spiegazione teorema centrale del limite
 - Spiegare il sistema simulato
 
 = Methods of investigation
